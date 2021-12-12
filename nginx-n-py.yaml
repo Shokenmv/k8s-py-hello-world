@@ -1,0 +1,58 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: nginx-n-py
+  labels:
+    project: k8s-hw
+    app: hello-world
+
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      project: k8s-hw
+
+  template:
+    metadata:
+      labels:
+        project: k8s-hw
+        app: hello-world
+
+    spec:
+      volumes:
+      - name: nginx-conf
+        hostPath:
+          path: /minikube-host/vm_homrworks/k8s-py-hello-world/nginx.conf
+
+      containers:
+      
+      - name: nginx-proxy
+        image: nginx:stable
+        volumeMounts:
+        - name: nginx-conf
+          mountPath: /etc/nginx/nginx.conf
+        ports:
+        - containerPort: 80
+
+      - name: hello-world
+        image: shokenmv/py-hello-world
+        ports:
+        - containerPort: 5000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-n-py-service
+  labels:
+    owner: shokemv
+spec:
+  selector:
+    project: k8s-hw
+
+  ports:
+    - name      : app-listener
+      protocol  : TCP
+      port      : 82
+      targetPort: 5000
+  type: ClusterIP

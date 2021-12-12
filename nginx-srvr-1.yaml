@@ -1,0 +1,33 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: nginx-srvr-1
+  labels:
+    project: k8s-hw
+    app: nginx-srvr
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      project: k8s-hw
+      app: nginx-srvr
+
+  template:
+    metadata:
+      labels:
+        project: k8s-hw
+        app: nginx-srvr
+
+    spec:
+      containers:
+      - name: nginx1
+        image: nginx:stable
+        volumeMounts:
+        - name: devops-internship
+          mountPath: /home/devops_internship/
+
+      volumes:
+      - name: devops-internship
+        hostPath:
+          path: /minikube-host/vm_homrworks/k8s-py-hello-world/devops_internship
